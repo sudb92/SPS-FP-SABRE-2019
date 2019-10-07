@@ -1,0 +1,43 @@
+#include <iostream>
+#include <fstream>
+#include <map>
+
+//enum Side_Si_Detector {FRONT,BACK,UNUSED};
+//enum ID_Si_Detector {A,B,C,D,E,UNUSED}
+struct sabrechan
+{
+  std::string detID;
+  std::pair<std::string,int> side_pos;
+  int Ecutlo;
+  int Ecuthi;
+};
+
+int test_map()
+{
+  //vector with 
+  ifstream in; 
+  std::map<int,sabrechan> map1;
+
+  in.open("ChannelMapSabre.dat");
+  if(!in.is_open())
+  {
+    std::cerr << "Error opening file " << in << " ..." << std::endl;
+    return -1;
+  }
+
+  //ChannelMapSabre has
+  // ch#  detID  Side  PosID  Elow  Ehigh
+  int ch_1, pos_1, Elow, Ehigh;
+  std::string side_1;
+  std::string name_1;
+  sabrechan channel;  
+
+  while(!in.eof())
+  {
+    in>>ch_1>>channel.detIchannel.detIDD>>channel.side_pos.first>>channel.side_pos.second>>channel.Ecutlo>>channel.Ecuthi;
+    std::cout <<ch_1<<"\t"<<name_1<<"\t"<<side_1<<"\t"<<pos_1<<"\t"<<Elow<<"\t"<<Ehigh<<std::endl;
+    map1
+  }
+  
+  return 1;
+}
