@@ -25,17 +25,17 @@ kGistEarth=111,       kViridis=112,     kCividis=113*/
    TTree *dataTree = static_cast<TTree*>(f->Get("builtTree"));
    gStyle->SetOptStat("nei");
    gStyle->SetPalette(kInvertedDarkBodyRadiator);//kDarkBodyRadiator   kInvertedDarkBodyRadiator
-   TFile *fprotoncut = new TFile("protonCutHG.root");
+   TFile *fprotoncut = new TFile("cuts/protonCutHG.root");
    TCutG *fprotons = static_cast<TCutG*>(fprotoncut->Get("protons"));
    fprotons->SetName("protons");
-   TFile *fdeuteroncut = new TFile("deuteronCutHG.root");
+   TFile *fdeuteroncut = new TFile("cuts/deuteronCutHG.root");
    TCutG *fdeuterons = static_cast<TCutG*>(fdeuteroncut->Get("deuterons"));
    fdeuterons->SetName("deuterons");
-   TFile *falphacut = new TFile("alphaCutForTheWin.root");
+   TFile *falphacut = new TFile("cuts/alphaCutForTheWin.root");
 //   TFile *falphacut = new TFile("alphaCutHG.root");
    TCutG *falphas = static_cast<TCutG*>(falphacut->Get("alphas"));
    falphas->SetName("alphas");
-   TFile *ftritoncut = new TFile("tritonCutHG.root");
+   TFile *ftritoncut = new TFile("cuts/tritonCutHG.root");
    TCutG *ftritons = static_cast<TCutG*>(ftritoncut->Get("tritons"));
    ftritons->SetName("tritons");
   
