@@ -5,8 +5,6 @@ It saves the combined tree to a new tree of the form compass_run_combined_<runID
 sbalak2@lsu.edu
 Sudarsan.B
 Oct 2019
-
-
 */
 #include <TChain.h>
 #include <TSystem.h>
