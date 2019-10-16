@@ -2,7 +2,7 @@
 Collection of ROOT macros that post-process SABRE+FocalPlane data from FSU Enge SPS 
 
 # Particular macros in the folder:
-1. **sabre_timestamp_shifter.C**
+1. **sabre_timestamp_shifter2.C**
 Reads through the compass tree and shifts only the timestamps of sabre events forward by a set amount, so that they happen after the anode event which triggers eventbuilding in analyseDPP_fp_sabre3.C 
 <>
 2. **analyseDPP_fp_sabre3.C**
