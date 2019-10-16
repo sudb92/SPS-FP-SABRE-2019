@@ -20,7 +20,47 @@
 // to help improve workflow
 void analyzeDPP_fp_sabre3() 
 {
-   int runNumber = 319;
+   int runNumber = 329;
+
+
+   bool gainmatch = true;
+   double sabre_gainmatch[128] ;
+//   sabre_gainmatch = new double[128];
+   ifstream in;
+     //map[0-127] should return the sabrechan instance with all the properties
+   in.open("run401-sabre-gainmatch");
+   if(!in.is_open())
+   {
+    std::cerr << "Error opening gainmatch file ";// << in << " ..." << std::endl;
+    return;
+   }
+
+   //Gain match file has 
+   // ch   peak_position  gain_value
+   int ch_1;
+   double temp1, temp2;
+   std::cout << "Reading gain file.." << std::endl;
+   std::cout << "ch vs gain found as folows.." << std::endl;
+   while(!in.eof())
+   {
+     in>>ch_1>>temp1>>temp2;
+     sabre_gainmatch[ch_1] = temp2;
+     std::cout << "\n" << ch_1 << " " << sabre_gainmatch[ch_1];
+   }
+/*
+  for(int i=0; i<128; i++)
+  {
+    
+    if(map1[i].side_pos.first == "FRONT" && map1[i].detID == "A")
+		std::cout << i <<" " << map1[i].detID << " " << map1[i].side_pos.first << " " << map1[i].side_pos.second <<std::endl;
+  }*/
+  in.close();
+   
+//  return;
+
+
+
+
    // Create a histogram for the values we read.
    Long64_t cid=0;
    test_map();
@@ -41,7 +81,7 @@ void analyzeDPP_fp_sabre3()
    // Open the file containing the CoMPASS tree.
 
 
-   TFile *compassFile = TFile::Open(Form("./output/sabreShiftedFile(testing)_%d.root",runNumber));
+   TFile *compassFile = TFile::Open(Form("./output/sabreShiftedFile(testing,combined)_%d.root",runNumber));
    TTree *compassTree;
     if(compassFile->IsOpen())
     {
@@ -104,7 +144,7 @@ void analyzeDPP_fp_sabre3()
 
 
    // Open event built root file
-   TFile *builtFile = new TFile(Form("output/builtFile(testing)_%d.root",runNumber),"RECREATE");
+   TFile *builtFile = new TFile(Form("output/builtFile(testing,combined,gainmatched)_%d.root",runNumber),"RECREATE");
    TTree *builtTree = new TTree("builtTree","Offline Built Tree From DPP data");
 
    FocalPlane *FP = new FocalPlane();
@@ -187,8 +227,8 @@ void analyzeDPP_fp_sabre3()
    const UShort_t anodeMBchan = 13+16*2;*/
    
    //Event Building Coincidence Window
-//   int coincidenceWindow = 2.0 * 1e6; // Microseconds to Picoseconds
-   int coincidenceWindow = 3.5 * 1e6; // Microseconds to Picoseconds
+   int coincidenceWindow = 2.0 * 1e6; // Microseconds to Picoseconds
+   //int coincidenceWindow = 1 * 1e6; // Microseconds to Picoseconds
 
    //Initialize some variables
    ULong64_t startTime = 0;
@@ -396,7 +436,12 @@ void analyzeDPP_fp_sabre3()
                         //std::cout << std::endl << "Front: " << (*eventList_it)->Energy ;
 			if((*eventList_it)->Energy > FP->MaxSabreFrontLong && (*eventList_it)->Energy < 16384 && !((*eventList_it)->Energy>PULSER_PEAK_GATE_LOW && (*eventList_it)->Energy<PULSER_PEAK_GATE_HIGH) )
 		       {						
+
+               if(gainmatch)
+			       FP->MaxSabreFrontLong = (*eventList_it)->Energy*sabre_gainmatch[chan];
+			   else
 			       FP->MaxSabreFrontLong = (*eventList_it)->Energy;
+
 			       FP->MaxSabreFrontTime = static_cast<double>((*eventList_it)->Timestamp)/1.0e3;
 			       FP->MaxSabreFrontCh = (*eventList_it)->Channel + ((*eventList_it)->Board)*16;   
 		               found_sabreF=true;
@@ -413,7 +458,10 @@ void analyzeDPP_fp_sabre3()
 			 //Same approach as for fronts but with backs
 			 if((*eventList_it)->Energy > FP->MaxSabreBackLong && (*eventList_it)->Energy < 16384 && !((*eventList_it)->Energy>PULSER_PEAK_GATE_LOW && (*eventList_it)->Energy<PULSER_PEAK_GATE_HIGH) )
 			 {
-			   FP->MaxSabreBackLong = (*eventList_it)->Energy;
+               //if(gainmatch)
+			   //		FP->MaxSabreBackLong = (*eventList_it)->Energy*sabre_gainmatch[chan];
+			   //else
+			   		FP->MaxSabreBackLong = (*eventList_it)->Energy;
 			   FP->MaxSabreBackTime = static_cast<double>((*eventList_it)->Timestamp)/1.0e3;
 			   FP->MaxSabreBackCh = (*eventList_it)->Channel + ((*eventList_it)->Board)*16;   
 			   found_sabreB=true;
@@ -442,7 +490,7 @@ void analyzeDPP_fp_sabre3()
 	    }
             builtTree->Fill();
   	    coinccount++;
-	    
+	    i--;
 	    if(found_sabreF && found_anodeMF)
 	    {
                 dtsabreanode->Fill((FP->MaxSabreFrontTime - FP->anodeTimeMF));
@@ -492,16 +540,16 @@ void analyzeDPP_fp_sabre3()
 
    TCanvas *ca;
    ca = new TCanvas();
-
    ca->cd();
 //   syncCheckHistogram->Draw();
-dtsabreanode->Draw();
-
+   dtsabreanode->Rebin(8);
+   dtsabreanode->Draw();
    ca->Modified();
    ca->Update();
 
    TCanvas *ccheck = new TCanvas("ccheck","ccheck");
    ccheck->cd();
+   tcheckFront->Rebin(8);
    tcheckFront->Draw();
    tcheckBack->SetLineColor(kRed);
    tcheckBack->Draw("SAME");
@@ -512,6 +560,7 @@ dtsabreanode->Draw();
    TCanvas *cscintanode = new TCanvas("Scint-Anode-Coinc","Scint-Anode-Coinc");
    cscintanode->cd();
    anodeScintTime->SetLineColor(kRed);
+   anodeScintTime->Rebin(8);
    anodeScintTime->Draw();   
    cscintanode->Modified();
    cscintanode->Update();

@@ -1,0 +1,32 @@
+{
+//========= Macro generated from object: alphas-319/Graph
+//========= by ROOT version6.13/08
+   
+   TCutG *cutg = new TCutG("alphas-319",21);
+   cutg->SetVarX("tdiffF");
+   cutg->SetVarY("anodeLongMF");
+   cutg->SetTitle("Graph");
+   cutg->SetFillStyle(1000);
+   cutg->SetPoint(0,-494.503,816.339);
+   cutg->SetPoint(1,-316.776,890.525);
+   cutg->SetPoint(2,-29.4241,958.776);
+   cutg->SetPoint(3,135.015,884.59);
+   cutg->SetPoint(4,228.03,762.925);
+   cutg->SetPoint(5,316.063,605.651);
+   cutg->SetPoint(6,380.842,475.084);
+   cutg->SetPoint(7,382.503,344.517);
+   cutg->SetPoint(8,339.317,353.419);
+   cutg->SetPoint(9,138.337,685.772);
+   cutg->SetPoint(10,18.7448,777.763);
+   cutg->SetPoint(11,-110.813,798.535);
+   cutg->SetPoint(12,-150.677,792.6);
+   cutg->SetPoint(13,-172.27,825.242);
+   cutg->SetPoint(14,-205.49,771.828);
+   cutg->SetPoint(15,-321.759,739.186);
+   cutg->SetPoint(16,-459.622,673.902);
+   cutg->SetPoint(17,-501.147,638.293);
+   cutg->SetPoint(18,-512.774,700.609);
+   cutg->SetPoint(19,-491.181,825.242);
+   cutg->SetPoint(20,-494.503,816.339);
+   cutg->Draw("");
+}

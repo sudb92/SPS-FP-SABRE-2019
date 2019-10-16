@@ -13,28 +13,62 @@
 #include "test_map.h"
 #include <vector>
 #include <cmath>
+#include "progressbar.h"
 
-void analyzeDPP_fp_sabre4() //sorts the tree manually
+
+//TODO: We should make this function take parameters as arguments e.g. (run number, fileName, treeName)
+// to help improve workflow
+void analyzeDPP_fp_sabre4(int runNumber) 
 {
+   //int runNumber = 319;
    // Create a histogram for the values we read.
    Long64_t cid=0;
    test_map();
 
    TH1F *deltaT = new TH1F("deltaT","#Delta{T}",1000,-1000,1000);
    TH2F *chVch = new TH2F("chVch","Channel Coincidence Map",16,-0.5,15.5,16,-0.5,15.5);
-
+   TH1D *dtsabreanode = new TH1D("sabreminusanode_dt","Sabre front anode front dt in ns",5000,-10e3,10e3);
+   TH1D *tcheckFront = new TH1D("tcheckFront",
+	"Focal Plane Detector Checking (front plane)",5000,-10e3,10e3);
+   TH1D *tcheckBack = new TH1D("tcheckBack",
+	"Focal Plane Detector Checking (back plane)",5000,-10e3,10e3);
+   TH1D *anodeScintTime = new TH1D("anodeScintTime",
+        "Anode / Scintillator Coincidence Time",5000,-10e3,10e3);
    TH2D *syncCheckHistogram = new TH2D("dT vs Board#", "Sync Checker Histogram", 8, 0, 7,1000,-5000,5000);
    std::vector<std::pair<int,double>> synclist;
    std::vector<std::pair<int,double>>::iterator synciter;
 
    // Open the file containing the CoMPASS tree.
-   int runNumber = 261;
-   TFile *compassFile = TFile::Open(Form("data/DAQ/run_%d/UNFILTERED/compass_run_%d.root",runNumber,runNumber));
-
-// TFile *compassFile = TFile::Open("/home/splitpole/Compass/SABRE+FP-SepOct2019-Testing/DAQ/run_112/UNFILTERED/compass_run_112.root");
 
 
-   TTree *compassTree = static_cast<TTree*>(compassFile->Get("Data"));
+   TFile *compassFile = TFile::Open(Form("./output/sabreShiftedFile(testing,combined)_%d.root",runNumber));
+   TTree *compassTree;
+    if(compassFile->IsOpen())
+    {
+     std::cout << "\nFound shifted file, opening.." ;
+     compassFile->Print();
+     compassTree = static_cast<TTree*>(compassFile->Get("sabreShiftedTree"));
+     }
+    else
+     {
+	//compassFile->Close();  can you close a file that failed to open?
+        std::cout << "\nNo shifted file found, trying to open the raw compass file.." ;
+	compassFile->Print();
+
+	compassFile = TFile::Open(Form("data/DAQ/run_%d/UNFILTERED/compass_run_%d.root",runNumber,runNumber));
+	 if(compassFile->IsZombie()) 
+	{
+	std::cout << "\nFile is Zombie. Can't drive without keys! ";
+	return;
+	}
+       compassTree = static_cast<TTree*>(compassFile->Get("Data"));
+     }
+
+
+
+   compassTree->Print();
+//   compassTree->Scan();
+//   return;
 
    UShort_t Energy,EnergyShort;
    ULong64_t Timestamp;
@@ -48,8 +82,20 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
    compassTree->SetBranchAddress("Board",&Board);
    compassTree->SetBranchAddress("Flags",&Flags);
 
+
+
+
 //Reference for sorting : https://root-forum.cern.ch/t/sorting-a-tree/12560/4
-   compassTree->BuildIndex("0","Timestamp");   // order tree by Timestamp
+   cout << "Sorting Data Tree ..." << endl;
+   compassTree->BuildIndex("0","Timestamp");   // order tree by Timestamp... 
+//TODO: we should only do this once and save the root tree to a file. This is by far 
+// the slowest and most intensive part of the event building
+// For example, We don't need to resort the tree if we just want to rebuild with a different 
+// coincidence window. 
+
+// Then one can make some online diagnostic plots in this nice function rather than the 
+// so-called ``onlineScript.C''
+   cout << "Done sorting" << endl;
    TTreeIndex *I = (TTreeIndex*)compassTree->GetTreeIndex();
    Long64_t* index2 = I->GetIndex();
    long int nentries = compassTree->GetEntries();
@@ -58,7 +104,7 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
 
 
    // Open event built root file
-   TFile *builtFile = new TFile(Form("output/builtFile_%d.root",runNumber),"RECREATE");
+   TFile *builtFile = new TFile(Form("output/builtFile(testing,combined)_%d.root",runNumber),"RECREATE");
    TTree *builtTree = new TTree("builtTree","Offline Built Tree From DPP data");
 
    FocalPlane *FP = new FocalPlane();
@@ -68,7 +114,7 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
    builtTree->Branch("delayTimeBR",&FP->delayTimeBR,"delayTimeBR/D");
    builtTree->Branch("anodeTimeMF",&FP->anodeTimeMF,"anodeTimeMF/D");
    builtTree->Branch("anodeTimeMB",&FP->anodeTimeMB,"anodeTimeMB/D");
-   builtTree->Branch("scintTimeL",&FP->scintTimeL,"scintTimeL/D");
+   builtTree->Branch("scintTimeL",&FP->scintTimeL,"scintTimeL/D");//Broken channel
    builtTree->Branch("scintTimeR",&FP->scintTimeR,"scintTimeR/D");
    builtTree->Branch("cathodeTime",&FP->cathodeTime,"cathodeTime/D");
 
@@ -133,7 +179,7 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
    const UShort_t scintLchan = 1+16*2;
    const UShort_t cathodechan = 7+16*2;
 
-/*   const UShort_t delayFLchan = 8+16*2;
+/* const UShort_t delayFLchan = 8+16*2;
    const UShort_t delayFRchan = 9+16*2;
    const UShort_t delayBLchan = 10+16*2;
    const UShort_t delayBRchan = 11+16*2;
@@ -142,7 +188,7 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
    
    //Event Building Coincidence Window
 //   int coincidenceWindow = 2.0 * 1e6; // Microseconds to Picoseconds
-   int coincidenceWindow = 3 * 1e6; // Microseconds to Picoseconds
+   int coincidenceWindow = 3.5 * 1e6; // Microseconds to Picoseconds
 
    //Initialize some variables
    ULong64_t startTime = 0;
@@ -161,6 +207,12 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
    long int i = 0;
    double tempTS=0,dt=0;
    int temp;
+   std::cout << "\nNentries:" << nentries << std::flush;
+
+   int sabrebeforeanode = 0;
+   int sabreafteranode = 0;
+
+
    while (i<nentries) //Loop over tree
    {
       compassTree->GetEntry(index2[i]);
@@ -169,7 +221,7 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
 
         int chan = currentHit->Channel + (currentHit->Board)*16 ;
 //	dt = TMath::Abs(static_cast<double>(tempTS) - static_cast<double>(currentHit->Timestamp));
-
+/*
         if(((chan == 15) || (chan == 31)||(chan==36)||(chan==48)||(chan==64)||(chan==80)||(chan==96)||(chan==112))&&(currentHit->Energy> map1[chan].Ecutlo && currentHit->Energy<map1[chan].Ecuthi))
 	{
 
@@ -204,10 +256,10 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
 	    dt = 0;
 	}
 
-
+*/
 
       // If the Event List is empty, start building an event
-      if(eventList.empty() && Board==2 && (Channel == 12 || Channel == 13))
+      if(eventList.empty())//TRIGGERING on the front anode only
      // if(eventList.empty())  
       {
            startTime = currentHit->Timestamp;
@@ -253,6 +305,8 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
 	    bool found_scintL = false;
 	    bool found_scintR = false;
 	    bool found_cathode = false;
+
+
 
             //process the event
             for(eventList_it = eventList.begin();
@@ -378,16 +432,34 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
 	    */
  	    if(foundfp)
 	    {
-	     fp1s++;
-	     if(found_sabreF) coinc++;
-	     }
+	       fp1s++;
+	       if(found_sabreF) coinc++;
+	    }
 	    else
 	    {
-		if(found_sabreF) sabre1s++;
-		else other++;
+               if(found_sabreF) sabre1s++;
+               else other++;
 	    }
             builtTree->Fill();
   	    coinccount++;
+	    
+	    if(found_sabreF && found_anodeMF)
+	    {
+                dtsabreanode->Fill((FP->MaxSabreFrontTime - FP->anodeTimeMF));
+	    }
+	    if(found_scintR && found_anodeMF)
+                anodeScintTime->Fill(FP->anodeTimeMF-FP->scintTimeR);
+
+            if(found_anodeMF && found_delayFL && found_delayFR)
+            {
+		tcheckFront->Fill(FP->delayTimeFL/2+FP->delayTimeFR/2-FP->anodeTimeMF);
+            }
+            if(found_anodeMB && found_delayBL && found_delayBR)
+            {
+		tcheckBack->Fill(FP->delayTimeBL/2+FP->delayTimeBR/2-FP->anodeTimeMB);
+            }
+
+
             //end of process event
             //Reset Event List
             //cout << "          resetting eventlist (" << eventList.size() << " coincident events)" << endl;
@@ -399,8 +471,6 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
             }
             eventList.clear();
 
-
-
             //std::cout << "\nEmpty!";
             //End of Reset Event List
           }//end else
@@ -409,20 +479,44 @@ void analyzeDPP_fp_sabre4() //sorts the tree manually
        previousEventTime = currentHit->Timestamp;
        counter++;
        i++;
+       progressbar((double)i,(double)nentries);
     }//End of while (fReader.Next())
+
+
 
    builtTree->Write();
    builtFile->Close();
    cout << "counter: " << counter << endl;
    cout << "coinccount: " << coinccount << endl;
   
-/*
+
    TCanvas *ca;
    ca = new TCanvas();
+
    ca->cd();
-   syncCheckHistogram->Draw();
+//   syncCheckHistogram->Draw();
+dtsabreanode->Draw();
+
    ca->Modified();
-   ca->Update();*/
+   ca->Update();
+
+   TCanvas *ccheck = new TCanvas("ccheck","ccheck");
+   ccheck->cd();
+   tcheckFront->Draw();
+   tcheckBack->SetLineColor(kRed);
+   tcheckBack->Draw("SAME");
+   ccheck->Modified();
+   ccheck->Update();
+
+
+   TCanvas *cscintanode = new TCanvas("Scint-Anode-Coinc","Scint-Anode-Coinc");
+   cscintanode->cd();
+   anodeScintTime->SetLineColor(kRed);
+   anodeScintTime->Draw();   
+   cscintanode->Modified();
+   cscintanode->Update();
+
+
 /*
   for(int i=0; i<128; i++)
   {

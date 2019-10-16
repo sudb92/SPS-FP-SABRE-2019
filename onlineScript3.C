@@ -21,17 +21,40 @@ kStarryNight=102,     kSunset=103,      kTemperatureMap=104,
 kThermometer=105,     kValentine=106,   kVisibleSpectrum=107,
 kWaterMelon=108,      kCool=109,        kCopper=110,
 kGistEarth=111,       kViridis=112,     kCividis=113*/
-
+  // int run_number = 319;
 TChain* dataTree = new TChain("builtTree");  
- int run_number = 330;
+ int run_number = 317;
 //   TFile *f = new TFile(Form("output/builtFile(testing,combined)_%d.root",run_number));
 //   TTree *dataTree = static_cast<TTree*>(f->Get("builtTree"));
 dataTree->Add(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_number),-1);   
-   run_number = 335;
+   run_number = 318;
 //   TFile *f2 = new TFile(Form("output/builtFile(testing,combined)_%d.root",run_number));
 //   TTree *dataTree2 = static_cast<TTree*>(f2->Get("builtTree"));
 dataTree->Add(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_number),-1);   
 
+   run_number = 319;
+//   TFile *f2 = new TFile(Form("output/builtFile(testing,combined)_%d.root",run_number));
+//   TTree *dataTree2 = static_cast<TTree*>(f2->Get("builtTree"));
+dataTree->Add(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_number),-1);   
+
+   run_number = 320;
+//   TFile *f2 = new TFile(Form("output/builtFile(testing,combined)_%d.root",run_number));
+//   TTree *dataTree2 = static_cast<TTree*>(f2->Get("builtTree"));
+dataTree->Add(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_number),-1);   
+
+   run_number = 321;
+//   TFile *f2 = new TFile(Form("output/builtFile(testing,combined)_%d.root",run_number));
+//   TTree *dataTree2 = static_cast<TTree*>(f2->Get("builtTree"));
+dataTree->Add(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_number),-1);   
+
+   run_number = 322;
+//   TFile *f2 = new TFile(Form("output/builtFile(testing,combined)_%d.root",run_number));
+//   TTree *dataTree2 = static_cast<TTree*>(f2->Get("builtTree"));
+dataTree->Add(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_number),-1);   
+
+
+//   TFile *f = new TFile(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_number));
+//   TTree *dataTree = static_cast<TTree*>(f->Get("builtTree"));
    gStyle->SetOptStat("nei");
    gStyle->SetPalette(kInvertedDarkBodyRadiator);//kDarkBodyRadiator   kInvertedDarkBodyRadiator
    TFile *fprotoncut = new TFile("cuts/protonCutHG.root");
@@ -41,9 +64,9 @@ dataTree->Add(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_
    TCutG *fdeuterons = static_cast<TCutG*>(fdeuteroncut->Get("deuterons"));
    fdeuterons->SetName("deuterons");
 //   TFile *falphacut = new TFile("cuts/alphaCutForTheWin.root");
-   TFile *falphacut = new TFile("alphas_330_335.root");
+TFile *falphacut = new TFile("alphas_319.root");
 //   TFile *falphacut = new TFile("alphaCutHG.root");
-   TCutG *falphas = static_cast<TCutG*>(falphacut->Get("alphas_330_335"));
+   TCutG *falphas = static_cast<TCutG*>(falphacut->Get("alphas_319"));
    falphas->SetName("alphas");
    TFile *ftritoncut = new TFile("cuts/tritonCutHG.root");
    TCutG *ftritons = static_cast<TCutG*>(ftritoncut->Get("tritons"));
@@ -53,30 +76,28 @@ dataTree->Add(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_
    dataTree->SetAlias("tdiffB","(delayTimeBL-delayTimeBR)/2.0");
    dataTree->SetAlias("tcheckF","(delayTimeFL+delayTimeFR)/2.0-anodeTimeMF");
 
-
-
-    new TCanvas();
-   dataTree->Draw("tdiffF>>h1(2000,-1000,1000)","delayTimeFL>0 && delayTimeFR>0 && alphas");
+   new TCanvas();
+   dataTree->Draw("tdiffF>>tdiff_alphas(2000,-500,500)","delayTimeFL>0 && delayTimeFR>0 && alphas");
 
   // new TCanvas();
 //   dataTree->Draw("tdiffF>>h1other(2000,-1000,1000)","delayTimeFL>0 && delayTimeFR>0 && deuterons");
   // new TCanvas();
   // dataTree->Draw("tdiffB>>h2(2000,-1000,1000)","delayTimeBL>0 && delayTimeBR>0");
 
-   new TCanvas();
-   dataTree->Draw("delayLongFL:tdiffF>>hblah3(800,-700,700,800,0,4000)","delayTimeFL>0 && delayTimeFR>0 && delayLongFL>0","colz");
+  // new TCanvas();
+  // dataTree->Draw("delayLongFL:tdiffF>>hblah3(800,-700,700,800,0,4000)","delayTimeFL>0 && delayTimeFR>0 && delayLongFL>0","colz");
 
   // new TCanvas();
  //  dataTree->Draw("anodeLongMF>>blahblah(800,0,8000)","delayTimeFL>0 && delayTimeFR>0");
 
-  new TCanvas("tcheckF","tcheckF");
-   dataTree->Draw("tcheckF>>hblah(200,-1000,1000)","delayTimeFL>0 && delayTimeFR>0 && alphas");
+ // new TCanvas("tcheckF","tcheckF");
+ //  dataTree->Draw("tcheckF>>hblah(200,-1000,1000)","delayTimeFL>0 && delayTimeFR>0 && alphas");
 
-   new TCanvas();
-   dataTree->Draw("delayLongFR:tdiffF>>hbblah3(800,-700,700,400,0,4000)","delayTimeFL>0 && delayTimeFR>0 && delayLongFL>0","colz");
+  // new TCanvas();
+  // dataTree->Draw("delayLongFR:tdiffF>>hbblah3(800,-700,700,400,0,4000)","delayTimeFL>0 && delayTimeFR>0 && delayLongFL>0","colz");
 
-   new TCanvas();
-   dataTree->Draw("anodeLongMB:tdiffB>>hbbblah3(800,-700,700,400,0,4000)","delayTimeBL>0 && delayTimeBR>0","colz");
+  // new TCanvas();
+  // dataTree->Draw("anodeLongMB:tdiffB>>hbbblah3(800,-700,700,400,0,4000)","delayTimeBL>0 && delayTimeBR>0","colz");
 
 //   new TCanvas();
 //   dataTree->Draw("anodeLongMF:tdiffB>>hbbblahblahblah3(2000,-700,700,1000,0,4000)","delayTimeBL>0 && delayTimeBR>0","colz");
@@ -85,38 +106,48 @@ dataTree->Add(Form("output/builtFile(testing,combined,gainmatched)_%d.root",run_
 //   dataTree->Draw("anodeLongMB:tdiffF>>Banode_tdiffF(2000,-700,700,1000,0,4000)","delayTimeFL>0 && delayTimeFR>0","colz");
 
    new TCanvas();
-   dataTree->Draw("anodeLongMF:tdiffF>>Fanode_tdiffF(800,-700,700,400,0,4000)","delayTimeFL>0 && delayTimeFR>0 ","colz");
+   dataTree->Draw("anodeLongMF:tdiffF>>Fanode_tdiffF_old(800,-700,700,400,0,4000)","delayTimeFL>0 && delayTimeFR>0 ","colz");
 
+   TCanvas* ca = new TCanvas("Name");
+   ca->cd();
+   ca->SetFillStyle(4000);
+   dataTree->Draw("anodeLongMF:tdiffF>>Fanode_tdiffF(800,-600,500,400,0,1500)","delayTimeFL>0 && delayTimeFR>0 ","colz");
+   falphas->Draw("SAME");// &&  anodeTimeMF>scintTimeR-
+   ca->Modified();
+   ca->Update();
+
+   
 //   new TCanvas("ScintAnodeTime","ScintAnodeTime");
 //   dataTree->Draw("anodeTimeMF-scintTimeR>>hanodescintcheck(2000,-12000,40000)","scintTimeR>0 && anodeTimeMF>0","colz");
 
-   new TCanvas();
-   dataTree->Draw("anodeLongMF:scintLongR>>Ede(500,20,5000,500,20,5000)","anodeLongMF>0 && scintLongR>0","colz");
-
-
 //   new TCanvas();
-//   dataTree->Draw("MaxSabreFrontLong:MaxSabreFrontCh>>maxSabreF(128,0,127,16384,0,16383","MaxSabreFrontLong>0 && MaxSabreFrontCh > -1","colz");
+//   dataTree->Draw("anodeLongMF:scintLongR>>Ede(500,20,5000,500,20,5000)","anodeLongMF>0 && scintLongR>0","colz");
+
+
+   new TCanvas();
+   dataTree->Draw("MaxSabreFrontLong:MaxSabreFrontCh>>maxSabreF(128,0,127,16384,0,16383","MaxSabreFrontLong>0 && MaxSabreFrontCh > -1","colz");
 
    new TCanvas();
    dataTree->Draw("MaxSabreBackLong:MaxSabreBackCh>>maxSabreB(128,0,127,500,0,5000)","MaxSabreBackLong>0 && MaxSabreBackCh > -1","colz");
 
+   new TCanvas();
+   dataTree->Draw("MaxSabreFrontLong:tdiffF>>ESumGraph(100,-500,500,100,0,1000)","MaxSabreFrontLong>50 && MaxSabreFrontCh > -1 && delayTimeFL>0 && delayTimeFR>0 && alphas ","colz");// &&
 
    new TCanvas();
-   dataTree->Draw("MaxSabreFrontLong:tdiffF>>ESumGraph(100,-500,500,100,0,2000)","MaxSabreFrontLong>50 && MaxSabreFrontCh > -1 && delayTimeFL>0 && delayTimeFR>0 && alphas ","colz");//&& anodeTimeMF>scintTimeR
+   dataTree->Draw("((5.486/750)*MaxSabreFrontLong):tdiffF>>ESumGraphPeakcut(100,-500,500,100,0,8)","MaxSabreFrontLong>50 && MaxSabreFrontCh > -1 && delayTimeFL>0 && delayTimeFR>0 && alphas && (MaxSabreFrontTime - anodeTimeMF)>-300 && (MaxSabreFrontTime - anodeTimeMF)<700","colz");
 
-   new TCanvas();
-   dataTree->Draw("MaxSabreFrontLong:tdiffF>>ESumGraph(100,-500,500,100,0,2000)","MaxSabreFrontLong>50 && MaxSabreFrontCh > -1 && delayTimeFL>0 && delayTimeFR>0 && alphas ","colz");// &&
 
-    new TCanvas();
-   dataTree->Draw("((5.486/750)*MaxSabreFrontLong):tdiffF>>ESumGraphPeakcut(100,-500,500,100,0,8)","MaxSabreFrontLong>50 && MaxSabreFrontCh > -1 && delayTimeFL>0 && delayTimeFR>0 && alphas && (MaxSabreFrontTime - anodeTimeMF)>-300 && (MaxSabreFrontTime - anodeTimeMF)<700","colz");// &&  anodeTimeMF>scintTimeR-
-//   TF2 *func = new TF2("func","y*(5.486/1500)",0,16384);
+//   TF2 *func = new TF2("func","y*(5.486/750)",0,16384);
 //   ESumGraphPeakcut->Multiply(func);
+
+
 
    new TCanvas();
    dataTree->Draw("(MaxSabreFrontTime - anodeTimeMF)>>dtsabreanode(200,-5000,5000)","anodeTimeMF>0 && MaxSabreFrontTime>0 && MaxSabreFrontCh > -1","");// && anodeTimeMF>scintTimeR
 
-   new TCanvas();
-   dataTree->Draw("(MaxSabreFrontTime - anodeTimeMF)>>dtsabreanodepeakcut(200,-5000,5000)","anodeTimeMF>0 && MaxSabreFrontTime>0 && MaxSabreFrontCh > -1 && (MaxSabreFrontTime - anodeTimeMF)>-300 && (MaxSabreFrontTime - anodeTimeMF)<700","goff");
+//   new TCanvas();
+   dataTree->SetLineColor(kRed);
+   dataTree->Draw("(MaxSabreFrontTime - anodeTimeMF)>>dtsabreanodepeakcut(200,-5000,5000)","anodeTimeMF>0 && MaxSabreFrontTime>0 && MaxSabreFrontCh > -1 && (MaxSabreFrontTime - anodeTimeMF)>-300 && (MaxSabreFrontTime - anodeTimeMF)<700","SAME");// && anodeTimeMF>scintTimeR
 
 //dataTree->Draw("MaxSabreFrontLong:tdiffF>>ESumGraph(2000,-1000,1000,16384,0,16383)","MaxSabreFrontLong>0 && MaxSabreFrontCh > -1 && delayTimeFL>0 && delayTimeFR>0","colz");
 
