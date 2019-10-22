@@ -1,0 +1,3 @@
+1. move sabre_timestamp_shifter and analyseDPP_fp_sabre3 to header files, use macro guards to clean up multiple includes
+2. delete all heap allocations(compassTree,sabreShiftedTree; currentHit, histograms; )
+

@@ -1,6 +1,11 @@
-.d
-.so
-.pcm
+*.d
+*.so
+*.pcm
+*.png
+*.svg
+*.ods
+*.pdf
+*.jpg
 ./data/*
 ./output/*
 
