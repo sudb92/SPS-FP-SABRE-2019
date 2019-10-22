@@ -21,7 +21,7 @@
 void analyzeDPP_fp_sabre3() 
 {
    int runNumber = 329;
-
+   int segNumber = 1;
 
    bool gainmatch = true;
    double sabre_gainmatch[128] ;
@@ -81,7 +81,7 @@ void analyzeDPP_fp_sabre3()
    // Open the file containing the CoMPASS tree.
 
 
-   TFile *compassFile = TFile::Open(Form("./output/sabreShiftedFile(testing,combined)_%d.root",runNumber));
+   TFile *compassFile = TFile::Open(Form("./output/sabreShiftedFile(testing,combined)_%d_%d.root",runNumber,segNumber));
    TTree *compassTree;
     if(compassFile->IsOpen())
     {
@@ -95,7 +95,7 @@ void analyzeDPP_fp_sabre3()
         std::cout << "\nNo shifted file found, trying to open the raw compass file.." ;
 	compassFile->Print();
 
-	compassFile = TFile::Open(Form("data/DAQ/run_%d/UNFILTERED/compass_run_%d.root",runNumber,runNumber));
+	compassFile = TFile::Open(Form("data/DAQ/run_%d/UNFILTERED/compass_run_%d_%d.root",runNumber,runNumber,segNumber));
 	 if(compassFile->IsZombie()) 
 	{
 	std::cout << "\nFile is Zombie. Can't drive without keys! ";
@@ -144,7 +144,7 @@ void analyzeDPP_fp_sabre3()
 
 
    // Open event built root file
-   TFile *builtFile = new TFile(Form("output/builtFile(testing,combined,gainmatched)_%d.root",runNumber),"RECREATE");
+   TFile *builtFile = new TFile(Form("output/builtFile(testing,combined,gainmatched)_%d_%d.root",runNumber,segNumber),"RECREATE");
    TTree *builtTree = new TTree("builtTree","Offline Built Tree From DPP data");
 
    FocalPlane *FP = new FocalPlane();

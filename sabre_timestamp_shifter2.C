@@ -19,18 +19,27 @@
 //Version 2 tries to handle the chaining of multiple segments
 void sabre_timestamp_shifter2()
 {
-   int runNumber = 329;//til 322
+   int runNumber = 317;//til 322
    int segNumber = 1;
 
 
    
-   combine_segments(runNumber,3);
-   TFile *compassFile =  new TFile(Form("./data/DAQ/run_%d/UNFILTERED/compass_run_combined_%d.root",runNumber,runNumber));
+//   combine_segments(runNumber,5);
+//   TFile *compassFile =  new TFile(Form("./data/DAQ/run_%d/UNFILTERED/compass_run_combined_%d.root",runNumber,runNumber));
 
 
+  if(segNumber==0)
+ { std::cout << "\n Opening segment " <<0 << << " in run " << runNumber << "...";
+   TFile *compassFile =  new TFile(Form("data/DAQ/run_%d/UNFILTERED/compass_run_%d.root",runNumber,runNumber));
+   if(!compassFile->IsOpen()) std::cout << "\nFile open error!!";
+ }
+  else
+ { 
+   std::cout << "\n Opening segment " << segNumber << " in run " << runNumber << "..."; 
+   TFile *compassFile =  new TFile(Form("data/DAQ/run_%d/UNFILTERED/compass_run_%d_%d.root",runNumber,runNumber,segNumber));
+   if(!compassFile->IsOpen()) std::cout << "\nFile open error!!";
+ }
 
-//   TFile *compassFile =  new TFile(Form("data/DAQ/run_%d/UNFILTERED/compass_run_%d.root",runNumber,runNumber));
-//   if(!compassFile->IsOpen()) std::cout << "\nFile open error!!";
    test_map();
    UInt_t offset = 1e6; //Offset in ps
 
@@ -52,7 +61,7 @@ void sabre_timestamp_shifter2()
 
    long int nentries = compassTree->GetEntries();
 
-   TFile *sabreShiftedFile = new TFile(Form("output/sabreShiftedFile(testing,combined)_%d.root",runNumber),"RECREATE");
+   TFile *sabreShiftedFile = new TFile(Form("output/sabreShiftedFile(testing,combined)_%d_%d.root",runNumber,segNumber),"RECREATE");
    TTree *sabreShiftedTree = new TTree("sabreShiftedTree","Offline Tree with all SABRE timestamps offset, built From raw DPP data");
 
    sabreShiftedTree->Branch("Energy",&Energy,"Energy/s");

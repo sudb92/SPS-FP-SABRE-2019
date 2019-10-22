@@ -52,6 +52,8 @@ FocalPlane::FocalPlane() : delayTimeFL(0), delayTimeFR(0), delayTimeBL(0), delay
 			   delayLongFL(0), delayLongFR(0), delayLongBL(0), delayLongBR(0), anodeLongMF(0), anodeLongMB(0), delayShortFL(0),
                            delayShortFR(0), delayShortBL(0), delayShortBR(0), anodeShortMF(0), anodeShortMB(0), hits(0x000000) {}
 
+
+
 void FocalPlane::Reset()
 {
    delayTimeFL = 0;
