@@ -24,7 +24,7 @@ Dated 31 March 2020
 ### How to adapt this framework to a brand new run
 * Generate a suitable channel map for digitizer channels, as etc/SUITABLENAME_channel_map.txt. 
 * Generate a suitable gain-match file for SABRE channels, as etc/SUITABLENAME_gainmatch.txt. The filename in 1 and 2 must reflect in preprocess.h and eventbuild.h. Follow the format in etc/Feb2020_gainmatch.txt and etc/Feb2020_channel_map.txt
-* Edit preprocess.h to reflect a suitable time offset to add to Scint/SABRE channels, typically 1us, expressed as 1e6ps. Also set a suitable BASKET_SIZE in this file to use more/less RAM as needed within reason to optimize processing speed.
+* Edit preprocess.h to reflect a suitable time offset to add to Scint/SABRE channels, typically 1us, expressed as 1e6ps. Also set a suitable BASKET_SIZE in this file to use more/less RAM as needed within reason to optimize processing speed. Use as much as needed to run the fastest without jamming up RAM needed by the rest of the system.
 * Edit eventbuild.h to include all necessary runtime parameters and the coincidence window
 * Comment out the plotter() function call in processRun.C for now, and run 'make'
 * Run ./processRun.sh XXX for a suitable test-run XXX to generate sample builtTree_XXX.root
